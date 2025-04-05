@@ -8,6 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 interface ApiService {
+
     @GET("data/2.5/forecast/daily")
     suspend fun getWeatherForecast(
         @Query("q") q: String,

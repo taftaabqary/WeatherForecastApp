@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val weatherRepository: WeatherRepository): ViewModel() {
-    suspend fun getWeatherForecasting(): ApiResult<WeatherResponse, Boolean, Exception> {
-        return weatherRepository.getWeatherForecasting("Bandung")
+    suspend fun getWeatherForecasting(city: String): ApiResult<WeatherResponse, Boolean, Exception> {
+        return weatherRepository.getWeatherForecasting(city)
     }
 }

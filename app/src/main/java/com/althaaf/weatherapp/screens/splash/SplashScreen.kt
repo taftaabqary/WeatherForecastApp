@@ -40,7 +40,7 @@ fun SplashScreen(navController: NavController) {
             OvershootInterpolator(8f).getInterpolation(it)
         }))
         delay(2000L)
-        navController.navigate(WeatherScreens.HomeScreen.name)
+        navController.navigate(WeatherScreens.HomeScreen.name + "/Jakarta")
     }
 
     Surface(

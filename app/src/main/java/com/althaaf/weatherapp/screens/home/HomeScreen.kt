@@ -1,5 +1,6 @@
 package com.althaaf.weatherapp.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.althaaf.weatherapp.model.WeatherResponse
+import com.althaaf.weatherapp.navigation.WeatherScreens
 import com.althaaf.weatherapp.utils.ApiResult
 import com.althaaf.weatherapp.utils.ItemConverter.convertDecimalTemp
 import com.althaaf.weatherapp.utils.ItemConverter.convertTimeZoneToDate
@@ -38,13 +39,15 @@ import com.althaaf.weatherapp.widgets.WeatherAppBar
 import com.althaaf.weatherapp.widgets.WeekRow
 
 @Composable
-fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel) {
+fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, city: String?) {
+
+    Log.d("HomeScreen", city.toString())
 
     val weather = produceState(
         initialValue =
         ApiResult<WeatherResponse, Boolean, Exception>(loading = true)
     ) {
-        value = homeViewModel.getWeatherForecasting()
+        value = homeViewModel.getWeatherForecasting(city.toString())
     }
 
     if (weather.value.loading == true) {
@@ -54,7 +57,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(weather: WeatherResponse, navController: NavController) {
     Scaffold(
@@ -62,7 +64,11 @@ fun MainScaffold(weather: WeatherResponse, navController: NavController) {
         topBar = {
             WeatherAppBar(
                 title = weather.city.name + ", ${weather.city.country}",
-                elevation = 6.dp
+                navController = navController,
+                elevation = 6.dp,
+                onActionClicked = {
+                    navController.navigate(WeatherScreens.SearchScreen.name)
+                }
             )
         }
     ) { innerPadding ->
