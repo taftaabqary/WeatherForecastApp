@@ -13,6 +13,7 @@ import com.althaaf.weatherapp.screens.home.HomeScreen
 import com.althaaf.weatherapp.screens.home.HomeViewModel
 import com.althaaf.weatherapp.screens.search.SearchScreen
 import com.althaaf.weatherapp.screens.setting.SettingScreen
+import com.althaaf.weatherapp.screens.setting.SettingViewmodel
 import com.althaaf.weatherapp.screens.splash.SplashScreen
 
 @Composable
@@ -30,7 +31,8 @@ fun WeatherNavigation() {
         })){ navBackStack ->
             navBackStack.arguments?.getString("city").let { city ->
                 val homeViewModel: HomeViewModel = hiltViewModel()
-                HomeScreen(navController = navController, homeViewModel, city)
+                val settingViewModel: SettingViewmodel = hiltViewModel()
+                HomeScreen(navController = navController, homeViewModel, settingViewModel, city)
             }
         }
 

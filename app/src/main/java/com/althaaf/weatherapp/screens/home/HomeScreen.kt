@@ -18,7 +18,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +34,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.althaaf.weatherapp.model.WeatherResponse
 import com.althaaf.weatherapp.navigation.WeatherScreens
+import com.althaaf.weatherapp.screens.setting.SettingViewmodel
 import com.althaaf.weatherapp.utils.ApiResult
 import com.althaaf.weatherapp.utils.ItemConverter.convertDecimalTemp
 import com.althaaf.weatherapp.utils.ItemConverter.convertTimeZoneToDate
@@ -39,26 +44,38 @@ import com.althaaf.weatherapp.widgets.WeatherAppBar
 import com.althaaf.weatherapp.widgets.WeekRow
 
 @Composable
-fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, city: String?) {
-
-    Log.d("HomeScreen", city.toString())
-
-    val weather = produceState(
-        initialValue =
-        ApiResult<WeatherResponse, Boolean, Exception>(loading = true)
-    ) {
-        value = homeViewModel.getWeatherForecasting(city.toString())
+fun HomeScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel,
+    settingViewmodel: SettingViewmodel,
+    city: String?
+) {
+    val unit = settingViewmodel.units.collectAsState().value
+    val unitState = remember {
+        mutableStateOf("metric")
     }
 
-    if (weather.value.loading == true) {
-        CircularProgressIndicator()
-    } else if (weather.value.data != null) {
-        MainScaffold(weather.value.data!!, navController)
+    if (!unit.isNullOrEmpty()) {
+        unitState.value = unit[0].unit.split(" ")[0].lowercase()
+
+        Log.d("HomeScreen", "Unit State : ${unitState.value}")
+        val weather = produceState(
+            initialValue =
+            ApiResult<WeatherResponse, Boolean, Exception>(loading = true)
+        ) {
+            value = homeViewModel.getWeatherForecasting(city ?: "Purbalingga", units = unitState.value)
+        }.value
+
+        if (weather.loading == true) {
+            CircularProgressIndicator()
+        } else if (weather.data != null) {
+            MainScaffold(weather.data, navController, unitState)
+        }
     }
 }
 
 @Composable
-fun MainScaffold(weather: WeatherResponse, navController: NavController) {
+fun MainScaffold(weather: WeatherResponse, navController: NavController, unit: MutableState<String>) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -72,12 +89,12 @@ fun MainScaffold(weather: WeatherResponse, navController: NavController) {
             )
         }
     ) { innerPadding ->
-        MainContent(modifier = Modifier.padding(innerPadding), weather)
+        MainContent(modifier = Modifier.padding(innerPadding), weather, unit)
     }
 }
 
 @Composable
-fun MainContent(modifier: Modifier = Modifier, weather: WeatherResponse) {
+fun MainContent(modifier: Modifier = Modifier, weather: WeatherResponse, unit: MutableState<String>) {
 
     val thisDay = weather.list[0]
 
@@ -112,7 +129,7 @@ fun MainContent(modifier: Modifier = Modifier, weather: WeatherResponse) {
                     modifier = Modifier.size(80.dp)
                 )
                 Text(
-                    convertDecimalTemp(thisDay.temp.day) + "°",
+                    convertDecimalTemp(thisDay.temp.day) + if(unit.value == "metric") "°C" else "°F",
                     style = MaterialTheme.typography.displaySmall.copy(
                         fontWeight = FontWeight.Bold
                     )

@@ -3,7 +3,7 @@ package com.althaaf.weatherapp.screens.favorite
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.althaaf.weatherapp.model.Favorite
-import com.althaaf.weatherapp.repository.FavoriteRepository
+import com.althaaf.weatherapp.repository.WeatherDbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FavoriteViewModel @Inject constructor(private val favoriteRepository: FavoriteRepository): ViewModel() {
+class FavoriteViewModel @Inject constructor(private val favoriteRepository: WeatherDbRepository): ViewModel() {
     private var _favorite = MutableStateFlow<List<Favorite>>(emptyList())
     val favorite = _favorite.asStateFlow()
 

@@ -6,7 +6,7 @@ import com.althaaf.weatherapp.BuildConfig
 import com.althaaf.weatherapp.data.FavoriteDao
 import com.althaaf.weatherapp.data.FavoriteDatabase
 import com.althaaf.weatherapp.network.ApiService
-import com.althaaf.weatherapp.repository.FavoriteRepository
+import com.althaaf.weatherapp.repository.WeatherDbRepository
 import com.althaaf.weatherapp.repository.WeatherRepository
 import dagger.Module
 import dagger.Provides
@@ -73,7 +73,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun getFavoriteRepository(favoriteDao: FavoriteDao): FavoriteRepository {
-        return FavoriteRepository(favoriteDao)
+    fun getFavoriteRepository(favoriteDao: FavoriteDao): WeatherDbRepository {
+        return WeatherDbRepository(favoriteDao)
     }
 }

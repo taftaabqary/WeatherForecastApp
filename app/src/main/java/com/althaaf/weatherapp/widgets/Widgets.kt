@@ -163,7 +163,7 @@ fun HumidityWindPressureRow(data: WeatherItem) {
                 contentDescription = "Wind Icon",
                 modifier = Modifier.size(20.dp)
             )
-            Text(" ${data.gust} mph")
+            Text(" ${data.speed} mph")
         }
     }
 }

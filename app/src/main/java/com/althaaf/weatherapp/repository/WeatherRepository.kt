@@ -7,9 +7,13 @@ import com.althaaf.weatherapp.utils.ApiResult
 class WeatherRepository(
     private val apiService: ApiService
 ) {
-    suspend fun getWeatherForecasting(city: String): ApiResult<WeatherResponse, Boolean, Exception> {
+    suspend fun getWeatherForecasting(city: String, units: String): ApiResult<WeatherResponse, Boolean, Exception> {
         val response = try {
-            apiService.getWeatherForecast(city)
+            if(units.isEmpty()) {
+                apiService.getWeatherForecast(city)
+            } else {
+                apiService.getWeatherForecast(city, units = units)
+            }
         } catch (e: Exception) {
             return ApiResult(error = e)
         }
