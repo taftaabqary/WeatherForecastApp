@@ -1,11 +1,17 @@
 package com.althaaf.weatherapp.di
 
+import android.content.Context
+import androidx.room.Room
 import com.althaaf.weatherapp.BuildConfig
+import com.althaaf.weatherapp.data.FavoriteDao
+import com.althaaf.weatherapp.data.FavoriteDatabase
 import com.althaaf.weatherapp.network.ApiService
+import com.althaaf.weatherapp.repository.FavoriteRepository
 import com.althaaf.weatherapp.repository.WeatherRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,6 +23,24 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
+
+    @Singleton
+    @Provides
+    fun getDaoServices(favoriteDatabase: FavoriteDatabase): FavoriteDao {
+        return favoriteDatabase.favoriteDao()
+    }
+
+    @Singleton
+    @Provides
+    fun getFavoriteDatabase(@ApplicationContext context: Context): FavoriteDatabase {
+        return Room.databaseBuilder(
+            context,
+            FavoriteDatabase::class.java,
+            "fav_db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+    }
 
     @Singleton
     @Provides
@@ -45,5 +69,11 @@ class AppModule {
     @Provides
     fun getWeatherRepository(apiService: ApiService): WeatherRepository {
         return WeatherRepository(apiService)
+    }
+
+    @Singleton
+    @Provides
+    fun getFavoriteRepository(favoriteDao: FavoriteDao): FavoriteRepository {
+        return FavoriteRepository(favoriteDao)
     }
 }
